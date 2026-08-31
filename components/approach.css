@@ -1,0 +1,30 @@
+/* Section « Une approche différente du conseil » — affichée en bas de chaque page */
+.approach-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: clamp(1.5rem, 3vw, 2.4rem);
+}
+.approach-card { text-align: center; }
+.approach-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  margin-bottom: 1.1rem;
+  border-radius: 50%;
+  background: var(--c-cyan-soft);
+}
+.approach-svg { width: 44px; height: 44px; }
+.approach-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+.approach-card p { font-size: 0.9rem; color: var(--c-ink-soft); margin: 0; }
+
+@media (max-width: 920px) {
+  .approach-grid { grid-template-columns: repeat(3, 1fr); gap: 2rem 1.5rem; }
+}
+@media (max-width: 560px) {
+  .approach-grid { grid-template-columns: repeat(2, 1fr); }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "statim-management",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@fontsource/poppins": "^5.2.7",
+    "@fontsource/raleway": "^5.2.8",
+    "next": "14.2.35",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}

@@ -1,0 +1,35 @@
+.form { display: grid; gap: 1.2rem; }
+.field { display: grid; gap: 0.4rem; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+.field label { font-weight: 500; font-size: 0.92rem; color: var(--c-deep); }
+.field input, .field textarea {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1.5px solid var(--c-line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--c-ink);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  width: 100%;
+}
+.field input:focus, .field textarea:focus {
+  outline: none;
+  border-color: var(--c-cyan);
+  box-shadow: 0 0 0 3px rgba(74,196,222,0.2);
+}
+.field textarea { resize: vertical; }
+.form-submit { justify-self: start; }
+.form-error { color: #b3261e; font-size: 0.9rem; margin: 0; }
+.form-legal { font-size: 0.82rem; color: var(--c-ink-soft); margin: 0; }
+.form-legal a { color: var(--c-deep); text-decoration: underline; }
+.form-success {
+  background: var(--c-cyan-soft);
+  border: 1px solid var(--c-cyan);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+}
+.form-success h3 { margin-top: 0; }
+.form-success p { color: var(--c-ink-soft); margin: 0; }
+
+@media (max-width: 560px) { .field-row { grid-template-columns: 1fr; } }
