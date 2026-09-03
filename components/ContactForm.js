@@ -17,25 +17,33 @@ export default function ContactForm({ lang = "fr" }) {
       setStatus("error");
       return;
     }
+    // Anti-spam : si le honeypot est rempli, on simule un succès sans rien envoyer.
+    if (form.company) {
+      setStatus("ok");
+      return;
+    }
     setStatus("sending");
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch("https://formsubmit.co/ajax/pchevalier@statim-management.fr", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          Nom: form.nom,
+          Société: form.societe,
+          Email: form.email,
+          Téléphone: form.tel || "—",
+          Message: form.message,
+          _subject: t.mailSubject,
+          _template: "table",
+          _captcha: "false",
+          _replyto: form.email,
+        }),
       });
       if (!res.ok) throw new Error();
       setStatus("ok");
       setForm({ nom: "", societe: "", email: "", tel: "", message: "", company: "" });
     } catch {
-      // Fallback : ouverture du client mail
-      const body = encodeURIComponent(
-        `${t.nom} : ${form.nom}\n${t.societe} : ${form.societe}\n${t.email} : ${form.email}\n${t.tel} : ${form.tel}\n\n${form.message}`
-      );
-      window.location.href = `mailto:contact@statim-management.fr?subject=${encodeURIComponent(
-        t.mailSubject
-      )}&body=${body}`;
-      setStatus("ok");
+      setStatus("senderror");
     }
   };
 
@@ -84,6 +92,9 @@ export default function ContactForm({ lang = "fr" }) {
       />
       {status === "error" && (
         <p className="form-error" role="alert">{t.errorRequired}</p>
+      )}
+      {status === "senderror" && (
+        <p className="form-error" role="alert">{t.errorSend}</p>
       )}
       <button type="button" className="btn btn-primary form-submit" onClick={handleSubmit} disabled={status === "sending"}>
         {status === "sending" ? t.sending : t.send}
