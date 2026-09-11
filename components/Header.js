@@ -62,6 +62,7 @@ function LangFlags({ lang, canonical, label, size, onNavigate }) {
 export default function Header({ lang }) {
   const d = getDict(lang);
   const L = (p) => href(lang, p);
+  const diagUrl = lang === "en" ? "/diagnostic-en.html" : "/diagnostic.html";
   const SOLUTIONS = d.home.services.map((s) => ({ href: L(`/${s.slug}`), label: s.title }));
 
   const pathname = usePathname() || "/";
@@ -119,7 +120,7 @@ export default function Header({ lang }) {
 
         <div className="hdr-actions">
           <LangFlags lang={lang} canonical={canonical} label={d.nav.langLabel} />
-          <Link href={L("/contact")} className="btn btn-accent hdr-cta">{d.nav.cta}</Link>
+          <a href={diagUrl} className="btn btn-accent hdr-cta">{d.nav.cta}</a>
         </div>
 
         <button
@@ -145,7 +146,7 @@ export default function Header({ lang }) {
           ))}
           <Link href={L("/blog")} onClick={() => setOpen(false)}>{d.nav.blog}</Link>
           <Link href={L("/contact")} onClick={() => setOpen(false)}>{d.nav.contact}</Link>
-          <Link href={L("/contact")} className="btn btn-accent" onClick={() => setOpen(false)}>{d.nav.cta}</Link>
+          <a href={diagUrl} className="btn btn-accent" onClick={() => setOpen(false)}>{d.nav.cta}</a>
           <div className="hdr-mobile-lang">
             <LangFlags lang={lang} canonical={canonical} label={d.nav.langLabel} size="lg" onNavigate={() => setOpen(false)} />
           </div>
