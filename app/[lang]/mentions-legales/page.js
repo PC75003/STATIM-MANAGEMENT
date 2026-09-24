@@ -28,8 +28,6 @@ export default function Page({ params }) {
                 <span key={i}>{i === 0 ? <strong>{line}</strong> : <FounderText>{line}</FounderText>}<br /></span>
               ))}
             </p>
-            <p style={{ fontSize: "0.9rem", fontStyle: "italic", color: "var(--c-ink-soft)" }}>{d.editorTodo}</p>
-
             <h2>{d.hostTitle}</h2>
             <p>{d.hostLines.map((line, i) => <span key={i}>{line}<br /></span>)}</p>
 
