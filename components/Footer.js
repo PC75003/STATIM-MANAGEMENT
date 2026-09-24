@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ApproachSection from "@/components/ApproachSection";
+import CookieSettingsLink from "@/components/CookieSettingsLink";
 import { getDict, href } from "@/lib/i18n";
 import "./footer.css";
 
@@ -48,6 +49,7 @@ export default function Footer({ lang }) {
         <div className="ftr-bottom">
           <div className="container ftr-bottom-inner">
             <span>© {new Date().getFullYear()} STATIM MANAGEMENT — {f.rights}</span>
+            <CookieSettingsLink label={d.cookies.manage} className="ftr-cookie" />
             <span className="ftr-labels">{f.labels}</span>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import { SERVICES, SERVICE_ORDER, SERVICE_IMG } from "@/lib/services";
-import { getDict, href } from "@/lib/i18n";
+import { getDict, href, SITE_URL } from "@/lib/i18n";
 
 export default function ServiceLayout({ lang = "fr", slug }) {
   const d = getDict(lang);
@@ -24,8 +24,9 @@ export default function ServiceLayout({ lang = "fr", slug }) {
     name: s.title,
     serviceType: s.nav,
     description: s.metaDesc,
+    url: `${SITE_URL}${L(`/${slug}`)}`,
     areaServed: [{ "@type": "Country", name: "France" }, { "@type": "Place", name: "Europe" }],
-    provider: { "@type": "ProfessionalService", name: "STATIM MANAGEMENT", url: "https://www.statim-management.fr" },
+    provider: { "@type": "ProfessionalService", name: "STATIM MANAGEMENT", url: SITE_URL },
   };
 
   return (

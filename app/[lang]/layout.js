@@ -9,6 +9,7 @@ import "@fontsource/poppins/500.css";
 import "@fontsource/poppins/600.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CookieConsent from "@/components/CookieConsent";
 import { LOCALES, DEFAULT_LOCALE, getDict, href, buildAlternates } from "@/lib/i18n";
 
 export function generateStaticParams() {
@@ -82,6 +83,7 @@ export default function RootLayout({ children, params }) {
         <Header lang={lang} />
         <main id="contenu">{children}</main>
         <Footer lang={lang} />
+        <CookieConsent lang={lang} />
       </body>
     </html>
   );

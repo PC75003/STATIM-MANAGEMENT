@@ -1,0 +1,78 @@
+.cookie {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  z-index: 1000;
+  max-width: 780px;
+  margin-inline: auto;
+  background: #fff;
+  border: 1px solid var(--c-line);
+  border-radius: 14px;
+  box-shadow: 0 14px 44px rgba(7, 58, 60, 0.2);
+  padding: 1.1rem 1.25rem;
+}
+
+.cookie-inner {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.cookie-text {
+  flex: 1 1 320px;
+}
+
+.cookie-text strong {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--c-deep);
+  font-weight: 700;
+}
+
+.cookie-text p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--c-ink-soft);
+}
+
+.cookie-text a {
+  color: var(--c-deep);
+  text-decoration: underline;
+}
+
+.cookie-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex: 0 0 auto;
+}
+
+.cookie-actions .btn {
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .cookie-actions {
+    width: 100%;
+  }
+  .cookie-actions .btn {
+    flex: 1;
+  }
+}
+
+/* Lien « Gérer les cookies » dans le pied de page */
+.ftr-cookie {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+}
+
+.ftr-cookie:hover {
+  color: #fff;
+}
