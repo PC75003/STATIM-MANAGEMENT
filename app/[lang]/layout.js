@@ -18,6 +18,7 @@ export function generateStaticParams() {
 export function generateMetadata({ params }) {
   const lang = params.lang;
   const d = getDict(lang).meta;
+  const ogImage = lang === "en" ? "/images/og-statim-en.jpg" : "/images/og-statim-fr.jpg";
   return {
     metadataBase: new URL("https://www.statim-management.fr"),
     title: { default: d.defaultTitle, template: d.titleTemplate },
@@ -30,13 +31,13 @@ export function generateMetadata({ params }) {
       url: href(lang, "/"),
       title: d.ogTitle,
       description: d.ogDescription,
-      images: [{ url: "/images/hero.webp", width: 1600, alt: d.ogImageAlt }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: d.ogImageAlt }],
     },
     twitter: {
       card: "summary_large_image",
       title: d.ogTitle,
       description: d.ogDescription,
-      images: ["/images/hero.webp"],
+      images: [ogImage],
     },
   };
 }
@@ -51,8 +52,16 @@ export default function RootLayout({ children, params }) {
     name: "STATIM MANAGEMENT",
     description: d.meta.orgDescription,
     url: "https://www.statim-management.fr",
+    logo: "https://www.statim-management.fr/images/logo-hr-management.png",
+    image: `https://www.statim-management.fr/images/og-statim-${lang === "en" ? "en" : "fr"}.jpg`,
     email: "contact@statim-management.fr",
     foundingDate: "2010",
+    sameAs: ["https://www.linkedin.com/in/pierre-chevalier-drh-externalise/"],
+    founder: {
+      "@type": "Person",
+      name: "Pierre Chevalier",
+      url: "https://www.linkedin.com/in/pierre-chevalier-drh-externalise/",
+    },
     areaServed: [{ "@type": "Country", name: "France" }, { "@type": "Place", name: "Europe" }],
     address: {
       "@type": "PostalAddress",
@@ -61,7 +70,7 @@ export default function RootLayout({ children, params }) {
       addressLocality: "Paris",
       addressCountry: "FR",
     },
-    knowsAbout: d.meta.orgDescription,
+    knowsAbout: d.meta.knowsAbout,
   };
 
   return (

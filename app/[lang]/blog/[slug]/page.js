@@ -26,13 +26,26 @@ export default function Page({ params }) {
   const d = getDict(lang).blog;
   const L = (p) => href(lang, p);
 
+  const pageUrl = `https://www.statim-management.fr${L(`/blog/${params.slug}`)}`;
   const schema = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
     description: post.desc,
-    author: { "@type": "Organization", name: "STATIM MANAGEMENT" },
-    publisher: { "@type": "Organization", name: "STATIM MANAGEMENT" },
+    datePublished: post.date,
+    dateModified: post.date,
+    inLanguage: lang === "en" ? "en-GB" : "fr-FR",
+    image: `https://www.statim-management.fr/images/og-statim-${lang === "en" ? "en" : "fr"}.jpg`,
+    mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
+    author: { "@type": "Organization", name: "STATIM MANAGEMENT", url: "https://www.statim-management.fr" },
+    publisher: {
+      "@type": "Organization",
+      name: "STATIM MANAGEMENT",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://www.statim-management.fr/images/logo-hr-management.png",
+      },
+    },
   };
 
   return (

@@ -4,13 +4,7 @@ export default function robots() {
       {
         userAgent: "*",
         allow: "/",
-        disallow: [
-          "/api/",
-          "/mentions-legales",
-          "/politique-confidentialite",
-          "/en/legal-notice",
-          "/en/privacy-policy",
-        ],
+        disallow: ["/api/"],
       },
     ],
     sitemap: "https://www.statim-management.fr/sitemap.xml",
