@@ -50,6 +50,19 @@ export default function Page({ params }) {
               <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--c-ink-soft)" }}>
                 {d.reachNote}
               </p>
+              <hr style={{ border: "none", borderTop: "1px solid var(--c-line)", margin: "1.4rem 0" }} />
+              <p style={{ margin: 0, fontSize: "0.9rem" }}>
+                <strong>{d.secondaryLabel}</strong><br />
+                <a
+                  href="https://www.drh-externalise.com"
+                  target="_blank"
+                  rel="noopener"
+                  style={{ color: "var(--c-deep)", textDecoration: "underline", textUnderlineOffset: "2px" }}
+                >
+                  {d.secondaryAnchor}
+                </a>{" "}
+                — drh-externalise.com
+              </p>
             </div>
           </aside>
         </div>
