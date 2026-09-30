@@ -35,7 +35,7 @@ export default function Page({ params }) {
             <ul>{d.commitments.map((c, i) => <li key={i}>{c}</li>)}</ul>
           </div>
 
-          <aside style={{ alignSelf: "stretch", display: "flex", flexDirection: "column" }}>
+          <aside>
             <Image
               src="/images/pierre-chevalier.webp"
               alt={d.photoAlt}
@@ -49,10 +49,11 @@ export default function Page({ params }) {
                 borderRadius: "14px",
                 display: "block",
                 marginInline: "auto",
+                marginBottom: "1.5rem",
                 boxShadow: "0 14px 40px rgba(7, 58, 60, 0.18)",
               }}
             />
-            <div className="aside-card" style={{ marginTop: "auto" }}>
+            <div className="aside-card" style={{ maxWidth: "280px", marginInline: "auto" }}>
               <h3>{d.asideTitle}</h3>
               <ul className="aside-list" style={{ marginBottom: 0 }}>
                 {d.asideList.map(([n, t]) => <li key={t}><strong>{n}</strong> — {t}</li>)}
