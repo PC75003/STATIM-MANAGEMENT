@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import PageHero from "@/components/PageHero";
 import FounderText from "@/components/FounderText";
 import { getDict, href, buildAlternates } from "@/lib/i18n";
@@ -35,6 +36,21 @@ export default function Page({ params }) {
           </div>
 
           <aside>
+            <Image
+              src="/images/pierre-chevalier.webp"
+              alt={d.photoAlt}
+              width={800}
+              height={1199}
+              sizes="(max-width: 900px) 100vw, 360px"
+              style={{
+                width: "100%",
+                height: "auto",
+                borderRadius: "14px",
+                marginBottom: "1.5rem",
+                display: "block",
+                boxShadow: "0 14px 40px rgba(7, 58, 60, 0.18)",
+              }}
+            />
             <div className="aside-card">
               <h3>{d.asideTitle}</h3>
               <ul className="aside-list" style={{ marginBottom: 0 }}>
