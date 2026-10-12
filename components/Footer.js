@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ApproachSection from "@/components/ApproachSection";
 import CookieSettingsLink from "@/components/CookieSettingsLink";
+import { CITY_SLUGS, getCity } from "@/lib/cities";
 import { getDict, href } from "@/lib/i18n";
 import "./footer.css";
 
@@ -45,6 +46,19 @@ export default function Footer({ lang }) {
             <Link href={L("/politique-confidentialite")}>{f.linkPrivacy}</Link>
           </nav>
         </div>
+
+        {CITY_SLUGS.length > 0 && (
+          <div className="ftr-areas">
+            <div className="container ftr-areas-inner">
+              <span className="ftr-areas-label">{f.areasLabel}</span>
+              <nav aria-label={f.areasLabel}>
+                {CITY_SLUGS.map((slug) => (
+                  <Link key={slug} href={L(`/${slug}`)}>{getCity(lang, slug).name}</Link>
+                ))}
+              </nav>
+            </div>
+          </div>
+        )}
 
         <div className="ftr-bottom">
           <div className="container ftr-bottom-inner">

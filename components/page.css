@@ -52,6 +52,8 @@
   background: var(--c-cyan);
 }
 .prose strong { color: var(--c-deep); }
+.value-link { display: inline-block; font-weight: 600; color: var(--c-deep); border-bottom: 2px solid var(--c-cyan); padding-bottom: 1px; transition: color 0.18s ease; }
+.value-link:hover { color: var(--c-cyan); }
 
 /* Two-column content with sticky aside */
 .split { display: grid; grid-template-columns: 1.6fr 0.9fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }

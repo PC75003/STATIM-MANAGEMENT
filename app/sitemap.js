@@ -1,4 +1,5 @@
 import { POSTS } from "@/lib/posts";
+import { CITY_SLUGS } from "@/lib/cities";
 import { LOCALES, href } from "@/lib/i18n";
 
 const BASE = "https://www.statim-management.fr";
@@ -23,6 +24,7 @@ export default function sitemap() {
   const now = new Date();
   const routes = [
     ...STATIC_ROUTES.map(([path, priority]) => [path, priority, now]),
+    ...CITY_SLUGS.map((slug) => [`/${slug}`, 0.8, now]),
     ...POSTS.fr.map((p) => [`/blog/${p.slug}`, 0.5, new Date(p.date)]),
   ];
 
