@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anomalies KIWI FDV</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#10110d;--panel:#1a1c16;--panel2:#22251d;--line:#33372b;
+  --ink:#e8e6da;--mute:#8f9180;--gold:#c9a227;
+  --we:#d4b03c;--abs:#d97d54;--fer:#7ba05b;--litig:#cf5b4e;--ok:#6f9e6a;
+}
+body{background:var(--bg);color:var(--ink);font-family:'Spline Sans Mono',monospace;font-size:13px;line-height:1.5;padding:24px;min-height:100vh}
+.wrap{max-width:1280px;margin:0 auto}
+header{border-bottom:2px solid var(--gold);padding-bottom:16px;margin-bottom:24px}
+h1{font-family:'Fraunces',serif;font-weight:700;font-size:28px;letter-spacing:-.5px;color:var(--ink)}
+h1 span{color:var(--gold)}
+.sub{color:var(--mute);font-size:12px;margin-top:4px}
+.controls{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px}
+.ctrl label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--mute);margin-bottom:6px}
+select,input{background:var(--panel);border:1px solid var(--line);color:var(--ink);font-family:inherit;font-size:13px;padding:9px 12px;border-radius:6px;min-width:240px;cursor:pointer}
+select:focus,input:focus{outline:none;border-color:var(--gold)}
+.toggle{display:flex;gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.toggle button{background:var(--panel);border:none;color:var(--mute);font-family:inherit;font-size:12px;padding:9px 14px;cursor:pointer;transition:.15s}
+.toggle button.on{background:var(--gold);color:#1a1c16;font-weight:600}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px}
+.card .k{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--mute)}
+.card .v{font-family:'Fraunces',serif;font-size:26px;font-weight:600;margin-top:6px}
+.card.litig{border-color:var(--litig)}.card.litig .v{color:var(--litig)}
+.card.tot .v{color:var(--gold)}
+.card .vc{font-size:11px;color:var(--mute);margin-top:2px}
+table{width:100%;border-collapse:collapse;background:var(--panel);border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+th{background:var(--panel2);text-align:left;padding:11px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--mute);border-bottom:1px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
+th:hover{color:var(--gold)}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(201,162,39,.05)}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;white-space:nowrap}
+.tag.we{background:rgba(212,176,60,.18);color:var(--we)}
+.tag.abs{background:rgba(217,125,84,.18);color:var(--abs)}
+.tag.fer{background:rgba(123,160,91,.18);color:var(--fer)}
+.nat{font-size:11px;color:var(--mute)}
+.amt{text-align:right;font-weight:600;white-space:nowrap}
+.amt.lit{color:var(--litig)}
+.warn{color:var(--mute);font-size:11px;font-style:italic;max-width:280px}
+.empty{padding:40px;text-align:center;color:var(--mute)}
+.sname{font-weight:600}
+.mat{color:var(--mute);font-size:11px}
+.foot{margin-top:16px;color:var(--mute);font-size:11px;line-height:1.7}
+.foot b{color:var(--ink)}
+@media(max-width:720px){td .warn{display:none}th.wcol{display:none}td.wcol{display:none}}
+
+#gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999}
+.gbox{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:10px;padding:36px 32px;max-width:360px;width:90%;text-align:center}
+.gbox h2{font-family:'Fraunces',serif;font-size:22px;margin-bottom:6px;color:var(--ink)}
+.gbox p{color:var(--mute);font-size:12px;margin-bottom:22px;line-height:1.6}
+.gbox input{width:100%;text-align:center;letter-spacing:2px;margin-bottom:14px}
+.gbox button{width:100%;background:var(--gold);color:#1a1c16;border:none;font-family:inherit;font-weight:600;font-size:14px;padding:11px;border-radius:6px;cursor:pointer;transition:.15s}
+.gbox button:hover{filter:brightness(1.08)}
+.gerr{color:var(--litig);font-size:12px;height:16px;margin-bottom:8px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gbox">
+    <h2>Accès restreint</h2>
+    <p>Données RH confidentielles &middot; KIWI FDV<br>Saisissez le mot de passe pour consulter le tableau de bord.</p>
+    <div class="gerr" id="gerr"></div>
+    <input type="password" id="gpw" placeholder="Mot de passe" autocomplete="off">
+    <button id="gbtn">Déverrouiller</button>
+  </div>
+</div>
+
+<div class="wrap">
+<header>
+  <h1>Anomalies consommation <span>KIWI FDV</span></h1>
+  <div class="sub">Péages (Edenred/VINCI) + Carburant (Shell) croisés avec l'état des absences &middot; Période 01/01/2026 → 05/06/2026</div>
+</header>
+
+<div class="controls">
+  <div class="ctrl">
+    <label>Salarié</label>
+    <select id="sal"></select>
+  </div>
+  <div class="ctrl">
+    <label>Type d'anomalie</label>
+    <select id="ano">
+      <option value="">Toutes</option>
+      <option value="Absence">Congés / Absence</option>
+      <option value="Week-end">Week-end</option>
+      <option value="férié">Jour férié</option>
+    </select>
+  </div>
+  <div class="ctrl">
+    <label>Affichage</label>
+    <div class="toggle" id="filtTog">
+      <button data-f="all" class="on">Tout</button>
+      <button data-f="litig">Litigieux net</button>
+    </div>
+  </div>
+</div>
+
+<div class="cards" id="cards"></div>
+
+<table id="tbl">
+  <thead><tr>
+    <th data-s="salarie">Salarié</th>
+    <th data-s="date">Date</th>
+    <th data-s="jour">Jour</th>
+    <th data-s="anomalie">Anomalie</th>
+    <th data-s="nature">Dépense</th>
+    <th data-s="lieu">Lieu</th>
+    <th data-s="montant" style="text-align:right">Montant</th>
+    <th class="wcol" data-s="warning">Contexte</th>
+  </tr></thead>
+  <tbody id="tb"></tbody>
+</table>
+
+<div class="foot">
+  <b>Litigieux net</b> = anomalies sans contexte atténuant. Les pleins carburant le week-end portent un avertissement (Leclerc/GMS souvent à prix coûtant le WE) et sont exclus du litigieux net mais restent à recouper.<br>
+  <b>Calvin LY</b> (mat. 3694) : aucune transaction sur la période. &middot; Les absences « Maladie » sont signalées au même titre que les congés ; une transaction durant un arrêt peut avoir une explication légitime à vérifier au cas par cas.
+</div>
+</div>
+
+<script>
+
+// --- Gate (protection navigateur simple, non cryptographique) ---
+(function(){
+  // password stored XOR-obfuscated, key 0x5b
+  var enc=[54,27,60,16,18,12,18];
+  function dec(){return enc.map(function(c){return String.fromCharCode(c^0x5b)}).join('')}
+  var gate=document.getElementById('gate'),pw=document.getElementById('gpw'),
+      btn=document.getElementById('gbtn'),err=document.getElementById('gerr'),
+      wrap=document.querySelector('.wrap');
+  wrap.classList.add('hidden');
+  function tryUnlock(){
+    if(pw.value===dec()){gate.classList.add('hidden');wrap.classList.remove('hidden');}
+    else{err.textContent='Mot de passe incorrect.';pw.value='';pw.focus();}
+  }
+  btn.onclick=tryUnlock;
+  pw.addEventListener('keydown',function(e){if(e.key==='Enter')tryUnlock()});
+  pw.focus();
+})();
+
+const DATA = [{"salarie":"ALMEIDA MARIE MADELEINE","matricule":3189,"date":"2026-03-27","jour":"Vendredi","anomalie":"Absence (Congés Payés)","nature":"Carburant","produit":"SP95-E10","lieu":"E998","montant":81.0,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-01-11","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-01-18","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-02-01","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-02-22","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-02-28","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-03-01","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-03-08","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-03-15","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-03-22","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-03-29","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-04-04","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-04-11","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-04-11","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-04-12","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-04-19","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-04-26","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-05-03","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-05-10","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-05-14","jour":"Jeudi","anomalie":"Jour férié (Ascension)","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-05-15","jour":"Vendredi","anomalie":"Absence (Congés Payés)","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-05-17","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-05-23","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-05-23","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-05-25","jour":"Lundi","anomalie":"Jour férié (Lundi de Pentecôte)","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BARONOVIC DANIELA","matricule":3379,"date":"2026-05-31","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"FONTAINE-LARIVIERE","montant":3.1,"warning":""},{"salarie":"BELL CINDYE","matricule":3111,"date":"2026-03-11","jour":"Mercredi","anomalie":"Absence (Congés Payés)","nature":"Péage","produit":"Peage","lieu":"ARGENTAN","montant":10.5,"warning":""},{"salarie":"BELL CINDYE","matricule":3111,"date":"2026-03-11","jour":"Mercredi","anomalie":"Absence (Congés Payés)","nature":"Péage","produit":"Peage","lieu":"RONAI VERS FALAISE","montant":4.6,"warning":""},{"salarie":"BELL CINDYE","matricule":3111,"date":"2026-03-11","jour":"Mercredi","anomalie":"Absence (Congés Payés)","nature":"Péage","produit":"Peage","lieu":"DOZULE FL","montant":4.2,"warning":""},{"salarie":"BELL CINDYE","matricule":3111,"date":"2026-03-11","jour":"Mercredi","anomalie":"Absence (Congés Payés)","nature":"Péage","produit":"Peage","lieu":"BEUZEVILLE FL","montant":6.3,"warning":""},{"salarie":"BELL CINDYE","matricule":3111,"date":"2026-03-11","jour":"Mercredi","anomalie":"Absence (Congés Payés)","nature":"Carburant","produit":"SP95-E10","lieu":"E996","montant":76.73,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-01-17","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Parking","lieu":"MARSEILLE BOURSE","montant":10.0,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-01-24","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"PRADO 2-CARENAGE","montant":6.2,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-01-24","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Parking","lieu":"MARSEILLE BOURSE","montant":12.0,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-02-07","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"PRADO 2-CARENAGE","montant":6.2,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-02-07","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Parking","lieu":"MARSEILLE BOURSE","montant":9.0,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-02-14","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Parking","lieu":"MARSEILLE BOURSE","montant":12.0,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-02-14","jour":"Samedi","anomalie":"Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"AVIA THEVENIN DUMMY RO","montant":46.79,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-03-14","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Parking","lieu":"MARSEILLE BOURSE","montant":5.0,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-03-14","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"CARENAGE-PRADO 2","montant":6.2,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-03-20","jour":"Vendredi","anomalie":"Absence (Congés Payés)","nature":"Péage","produit":"Peage","lieu":"PRADO 2-CARENAGE","montant":6.2,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-03-21","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Parking","lieu":"MARSEILLE BOURSE","montant":9.0,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-03-28","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"PRADO 2-CARENAGE","montant":6.2,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-03-28","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Parking","lieu":"MARSEILLE BOURSE","montant":10.0,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-04-04","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Parking","lieu":"MARSEILLE BOURSE","montant":19.0,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-04-18","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"PRADO 2-MENPENTI","montant":2.9,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-04-18","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"MENPENTI-PRADO 2","montant":2.9,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-04-18","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"PRADO 2-CARENAGE","montant":6.2,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-04-25","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"PRADO 2-MENPENTI","montant":2.9,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-04-25","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"PRADO-CARENAGE","montant":3.3,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-04-25","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Parking","lieu":"MARSEILLE BOURSE","montant":9.0,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-05-02","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Parking","lieu":"MARSEILLE BOURSE","montant":13.0,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-05-08","jour":"Vendredi","anomalie":"Jour férié (Victoire 1945)","nature":"Péage","produit":"Parking","lieu":"MARSEILLE BOURSE","montant":15.0,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-05-09","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"PRADO 2-MENPENTI","montant":2.9,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-05-09","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Parking","lieu":"MARSEILLE BOURSE","montant":6.0,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-05-23","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"PRADO 2-CARENAGE","montant":6.2,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-05-25","jour":"Lundi","anomalie":"Jour férié (Lundi de Pentecôte)","nature":"Péage","produit":"Peage","lieu":"PRADO 2-CARENAGE","montant":6.2,"warning":""},{"salarie":"CHEKAFF HAYAT SARAH","matricule":3208,"date":"2026-05-25","jour":"Lundi","anomalie":"Jour férié (Lundi de Pentecôte)","nature":"Péage","produit":"Parking","lieu":"MARSEILLE BOURSE","montant":2.0,"warning":""},{"salarie":"DJAOU JULIE","matricule":3486,"date":"2026-03-09","jour":"Lundi","anomalie":"Absence (Congé sans solde)","nature":"Péage","produit":"Peage","lieu":"NARBONNE-EST","montant":1.9,"warning":""},{"salarie":"DJAOU JULIE","matricule":3486,"date":"2026-03-09","jour":"Lundi","anomalie":"Absence (Congé sans solde)","nature":"Péage","produit":"Peage","lieu":"BEZIERS-OUEST","montant":2.3,"warning":""},{"salarie":"DJAOU JULIE","matricule":3486,"date":"2026-03-09","jour":"Lundi","anomalie":"Absence (Congé sans solde)","nature":"Carburant","produit":"SP95-E10","lieu":"E.Leclerc","montant":71.08,"warning":""},{"salarie":"DJAOU JULIE","matricule":3486,"date":"2026-03-10","jour":"Mardi","anomalie":"Absence (Congé sans solde)","nature":"Péage","produit":"Peage","lieu":"BEZIERS CABRIALS","montant":3.0,"warning":""},{"salarie":"DJAOU JULIE","matricule":3486,"date":"2026-03-11","jour":"Mercredi","anomalie":"Absence (Congé sans solde)","nature":"Péage","produit":"Peage","lieu":"AGDE-PEZENAS","montant":1.4,"warning":""},{"salarie":"DJAOU JULIE","matricule":3486,"date":"2026-03-12","jour":"Jeudi","anomalie":"Absence (Congé sans solde)","nature":"Péage","produit":"Peage","lieu":"NIMES-O","montant":9.6,"warning":""},{"salarie":"DJAOU JULIE","matricule":3486,"date":"2026-03-12","jour":"Jeudi","anomalie":"Absence (Congé sans solde)","nature":"Péage","produit":"Peage","lieu":"BEZIERS CABRIALS","montant":9.6,"warning":""},{"salarie":"DJAOU JULIE","matricule":3486,"date":"2026-03-13","jour":"Vendredi","anomalie":"Absence (Congé sans solde)","nature":"Péage","produit":"Peage","lieu":"MONTPELLIER ST-JEAN","montant":4.9,"warning":""},{"salarie":"DJAOU JULIE","matricule":3486,"date":"2026-03-13","jour":"Vendredi","anomalie":"Absence (Congé sans solde)","nature":"Carburant","produit":"SP95-E10","lieu":"E998","montant":77.69,"warning":""},{"salarie":"DJAOU JULIE","matricule":3486,"date":"2026-05-02","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"VIADUC MILLAU NORD","montant":11.3,"warning":""},{"salarie":"DJAOU JULIE","matricule":3486,"date":"2026-05-02","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"VIADUC DE MILLAU SUD","montant":11.3,"warning":""},{"salarie":"DJAOU JULIE","matricule":3486,"date":"2026-05-02","jour":"Samedi","anomalie":"Week-end","nature":"Carburant","produit":"Superplus 95","lieu":"E.Leclerc","montant":62.62,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"DUBOS JESSICA","matricule":3081,"date":"2026-02-08","jour":"Dimanche","anomalie":"Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"E.Leclerc","montant":47.11,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"DUBOS JESSICA","matricule":3081,"date":"2026-02-22","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"LANGON","montant":2.3,"warning":""},{"salarie":"DUBOS JESSICA","matricule":3081,"date":"2026-02-22","jour":"Dimanche","anomalie":"Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"E.Leclerc","montant":61.37,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"DUBOS JESSICA","matricule":3081,"date":"2026-02-28","jour":"Samedi","anomalie":"Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"E.Leclerc","montant":59.23,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"DUBOS JESSICA","matricule":3081,"date":"2026-03-25","jour":"Mercredi","anomalie":"Absence (Maladie)","nature":"Carburant","produit":"SP95-E10","lieu":"E.Leclerc","montant":58.87,"warning":""},{"salarie":"DUBOS JESSICA","matricule":3081,"date":"2026-03-28","jour":"Samedi","anomalie":"Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"E.Leclerc","montant":77.78,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"DUBOS JESSICA","matricule":3081,"date":"2026-03-29","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"LANGON","montant":2.3,"warning":""},{"salarie":"DUBOS JESSICA","matricule":3081,"date":"2026-04-05","jour":"Dimanche","anomalie":"Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"E.Leclerc","montant":75.38,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"GRAFF ALEXANDRE","matricule":3183,"date":"2026-04-11","jour":"Samedi","anomalie":"Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"E998","montant":41.59,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"GRAFF ALEXANDRE","matricule":3183,"date":"2026-05-25","jour":"Lundi","anomalie":"Jour férié (Lundi de Pentecôte)","nature":"Carburant","produit":"SP95-E10","lieu":"E998","montant":81.43,"warning":""},{"salarie":"HULOT SEBASTIEN","matricule":3092,"date":"2026-03-22","jour":"Dimanche","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"LA FOLIE-B/PARIS","montant":32.3,"warning":""},{"salarie":"HULOT SEBASTIEN","matricule":3092,"date":"2026-03-22","jour":"Dimanche","anomalie":"Week-end","nature":"Carburant","produit":"V-Power","lieu":"ENFR","montant":24.94,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"HULOT SEBASTIEN","matricule":3092,"date":"2026-03-22","jour":"Dimanche","anomalie":"Week-end","nature":"Carburant","produit":"V-Power","lieu":"ENFR","montant":65.87,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"JAGER MARC","matricule":3184,"date":"2026-05-15","jour":"Vendredi","anomalie":"Absence (Congés Payés)","nature":"Carburant","produit":"SP95-E10","lieu":"E.Leclerc","montant":87.47,"warning":""},{"salarie":"MORARD HUGO","matricule":3186,"date":"2026-02-26","jour":"Jeudi","anomalie":"Absence (Congés Payés)","nature":"Carburant","produit":"Superplus 98","lieu":"E998","montant":67.55,"warning":""},{"salarie":"MORARD HUGO","matricule":3186,"date":"2026-04-04","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"ST CLAIR EXTERIEUR","montant":2.6,"warning":""},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-01-03","jour":"Samedi","anomalie":"Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"E998","montant":29.87,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-01-17","jour":"Samedi","anomalie":"Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"E997","montant":20.15,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-01-24","jour":"Samedi","anomalie":"Week-end","nature":"Carburant","produit":"Lavage Automatique","lieu":"E997","montant":15.9,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-02-13","jour":"Vendredi","anomalie":"Absence (Maladie)","nature":"Péage","produit":"Peage","lieu":"MONTESSON FL","montant":10.8,"warning":""},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-02-13","jour":"Vendredi","anomalie":"Absence (Maladie)","nature":"Péage","produit":"Peage","lieu":"BUCHELAY FL","montant":3.0,"warning":""},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-02-13","jour":"Vendredi","anomalie":"Absence (Maladie)","nature":"Péage","produit":"Peage","lieu":"HEUDEBOUVILLE FL","montant":4.5,"warning":""},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-02-13","jour":"Vendredi","anomalie":"Absence (Maladie)","nature":"Péage","produit":"Peage","lieu":"BEUZEVILLE FL","montant":6.3,"warning":""},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-02-13","jour":"Vendredi","anomalie":"Absence (Maladie)","nature":"Péage","produit":"Peage","lieu":"DOZULE FL","montant":4.2,"warning":""},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-02-13","jour":"Vendredi","anomalie":"Absence (Maladie)","nature":"Péage","produit":"Peage","lieu":"DOZULE FL","montant":4.2,"warning":""},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-02-13","jour":"Vendredi","anomalie":"Absence (Maladie)","nature":"Péage","produit":"Peage","lieu":"BEUZEVILLE FL","montant":6.3,"warning":""},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-02-13","jour":"Vendredi","anomalie":"Absence (Maladie)","nature":"Péage","produit":"Peage","lieu":"HEUDEBOUVILLE FL","montant":4.5,"warning":""},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-02-13","jour":"Vendredi","anomalie":"Absence (Maladie)","nature":"Péage","produit":"Peage","lieu":"BUCHELAY FL","montant":3.0,"warning":""},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-02-13","jour":"Vendredi","anomalie":"Absence (Maladie)","nature":"Péage","produit":"Peage","lieu":"MONTESSON FL","montant":6.6,"warning":""},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-02-13","jour":"Vendredi","anomalie":"Absence (Maladie)","nature":"Carburant","produit":"SP95-E10","lieu":"E996","montant":61.21,"warning":""},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-02-14","jour":"Samedi","anomalie":"Absence (Maladie) + Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"E998","montant":10.01,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"MOUDNIB SAAD","matricule":3210,"date":"2026-03-01","jour":"Dimanche","anomalie":"Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"E998","montant":39.84,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"PEREZ HENRI","matricule":3636,"date":"2026-04-25","jour":"Samedi","anomalie":"Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"E.Leclerc","montant":80.29,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"PIERUCCETTI LAURENT","matricule":3154,"date":"2026-05-25","jour":"Lundi","anomalie":"Jour férié (Lundi de Pentecôte)","nature":"Péage","produit":"Peage","lieu":"BANDOL ECH.","montant":1.4,"warning":""},{"salarie":"PIERUCCETTI LAURENT","matricule":3154,"date":"2026-05-25","jour":"Lundi","anomalie":"Jour férié (Lundi de Pentecôte)","nature":"Péage","produit":"Peage","lieu":"BANDOL P/V","montant":2.6,"warning":""},{"salarie":"RAMBEAU EMILIE","matricule":3328,"date":"2026-01-10","jour":"Samedi","anomalie":"Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"E998","montant":69.58,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"RAMBEAU EMILIE","matricule":3328,"date":"2026-02-15","jour":"Dimanche","anomalie":"Week-end","nature":"Carburant","produit":"Superplus 95","lieu":"E.Leclerc","montant":77.6,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"RAMBEAU EMILIE","matricule":3328,"date":"2026-03-01","jour":"Dimanche","anomalie":"Week-end","nature":"Carburant","produit":"Superplus 98","lieu":"E998","montant":79.58,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"RAMBEAU EMILIE","matricule":3328,"date":"2026-03-08","jour":"Dimanche","anomalie":"Week-end","nature":"Carburant","produit":"Lavage Automatique","lieu":"E998","montant":13.0,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-03-28","jour":"Samedi","anomalie":"Week-end","nature":"Péage","produit":"Peage","lieu":"STE HERMINE","montant":10.0,"warning":""},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-03-28","jour":"Samedi","anomalie":"Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"E.Leclerc","montant":67.45,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-04-05","jour":"Dimanche","anomalie":"Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"E.Leclerc","montant":75.07,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-04-18","jour":"Samedi","anomalie":"Week-end","nature":"Carburant","produit":"SP95-E10","lieu":"E.Leclerc","montant":70.58,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-04-20","jour":"Lundi","anomalie":"Absence (Congés Payés)","nature":"Péage","produit":"Peage","lieu":"CHARTRES-EST","montant":26.4,"warning":""},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-04-20","jour":"Lundi","anomalie":"Absence (Congés Payés)","nature":"Péage","produit":"Peage","lieu":"LA FOLIE-B/PARIS","montant":8.0,"warning":""},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-04-20","jour":"Lundi","anomalie":"Absence (Congés Payés)","nature":"Péage","produit":"Peage","lieu":"POUILLY-EN-AUXOIS","montant":22.2,"warning":""},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-04-20","jour":"Lundi","anomalie":"Absence (Congés Payés)","nature":"Carburant","produit":"SP95-E10","lieu":"AVIA PICOTY DUMMY RO","montant":80.21,"warning":""},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-04-20","jour":"Lundi","anomalie":"Absence (Congés Payés)","nature":"Carburant","produit":"SP95-E10","lieu":"GASVILLE OISEME","montant":59.96,"warning":""},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-04-24","jour":"Vendredi","anomalie":"Absence (Congés Payés)","nature":"Péage","produit":"Peage","lieu":"AUXERRE SUD","montant":10.0,"warning":""},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-04-24","jour":"Vendredi","anomalie":"Absence (Congés Payés)","nature":"Péage","produit":"Peage","lieu":"FLEURY-EN-BIERE","montant":11.3,"warning":""},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-04-24","jour":"Vendredi","anomalie":"Absence (Congés Payés)","nature":"Péage","produit":"Peage","lieu":"CHARTRES-EST","montant":8.0,"warning":""},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-04-24","jour":"Vendredi","anomalie":"Absence (Congés Payés)","nature":"Péage","produit":"Peage","lieu":"LE MANS NORD","montant":13.6,"warning":""},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-04-24","jour":"Vendredi","anomalie":"Absence (Congés Payés)","nature":"Péage","produit":"Peage","lieu":"LA GRAVELLE VITRE","montant":13.4,"warning":""},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-04-24","jour":"Vendredi","anomalie":"Absence (Congés Payés)","nature":"Carburant","produit":"SP95-E10","lieu":"AVIA PICOTY AUTOROUTES DUMMY","montant":63.29,"warning":""},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-04-24","jour":"Vendredi","anomalie":"Absence (Congés Payés)","nature":"Carburant","produit":"SP95-E10","lieu":"E.Leclerc","montant":28.38,"warning":""},{"salarie":"ROBIN BENOIT","matricule":3385,"date":"2026-05-10","jour":"Dimanche","anomalie":"Week-end","nature":"Carburant","produit":"Diesel","lieu":"E.Leclerc","montant":70.66,"warning":"⚠ Plein WE : vérifier (Leclerc/GMS souvent prix coûtant le WE = choix tarifaire possible)."}];
+const fmt = n => n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+const dfr = s => {const[y,m,d]=s.split('-');return d+'/'+m+'/'+y};
+const isLitig = r => !r.warning;
+
+const salSel=document.getElementById('sal'), anoSel=document.getElementById('ano');
+let filt='all', sortKey='date', sortDir=1;
+
+// build salarié list (all KIWI incl. those w/ data; Calvin handled in foot)
+const sals=[...new Set(DATA.map(r=>r.salarie))].sort();
+salSel.innerHTML='<option value="">— Toute l\'équipe ('+sals.length+' salariés) —</option>'+
+  sals.map(s=>{const n=DATA.filter(r=>r.salarie===s).length;return '<option value="'+s+'">'+s+' ('+n+')</option>'}).join('');
+
+function current(){
+  let rows=DATA.slice();
+  const s=salSel.value, a=anoSel.value;
+  if(s) rows=rows.filter(r=>r.salarie===s);
+  if(a) rows=rows.filter(r=>r.anomalie.includes(a));
+  if(filt==='litig') rows=rows.filter(isLitig);
+  rows.sort((x,y)=>{
+    let vx=x[sortKey],vy=y[sortKey];
+    if(sortKey==='montant'){return (vx-vy)*sortDir}
+    return String(vx).localeCompare(String(vy),'fr')*sortDir;
+  });
+  return rows;
+}
+
+function tagClass(a){if(a.includes('Absence'))return'abs';if(a.includes('férié'))return'fer';return'we'}
+
+function render(){
+  const rows=current();
+  const total=rows.reduce((s,r)=>s+r.montant,0);
+  const litigRows=rows.filter(isLitig);
+  const litig=litigRows.reduce((s,r)=>s+r.montant,0);
+  const ctx=total-litig;
+
+  document.getElementById('cards').innerHTML=
+    card('Transactions',rows.length,'')+
+    card('Total anomalies',fmt(total),rows.length+' lignes','tot')+
+    card('Contexte WE (exclu)',fmt(ctx),(rows.length-litigRows.length)+' pleins WE')+
+    card('Litigieux net',fmt(litig),litigRows.length+' lignes','litig');
+
+  const tb=document.getElementById('tb');
+  if(!rows.length){tb.innerHTML='<tr><td colspan="8" class="empty">Aucune anomalie pour cette sélection.</td></tr>';return}
+  tb.innerHTML=rows.map(r=>{
+    const lit=isLitig(r);
+    return '<tr>'+
+      '<td><span class="sname">'+r.salarie+'</span><br><span class="mat">mat. '+r.matricule+'</span></td>'+
+      '<td>'+dfr(r.date)+'</td>'+
+      '<td>'+r.jour+'</td>'+
+      '<td><span class="tag '+tagClass(r.anomalie)+'">'+r.anomalie+'</span></td>'+
+      '<td>'+r.nature+'<br><span class="nat">'+r.produit+'</span></td>'+
+      '<td>'+(r.lieu||'—')+'</td>'+
+      '<td class="amt'+(lit?' lit':'')+'">'+fmt(r.montant)+'</td>'+
+      '<td class="wcol warn">'+(r.warning||'')+'</td>'+
+    '</tr>';
+  }).join('');
+}
+function card(k,v,vc,cls){return '<div class="card '+(cls||'')+'"><div class="k">'+k+'</div><div class="v">'+v+'</div>'+(vc?'<div class="vc">'+vc+'</div>':'')+'</div>'}
+
+salSel.onchange=render; anoSel.onchange=render;
+document.querySelectorAll('#filtTog button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#filtTog button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');filt=b.dataset.f;render();
+});
+document.querySelectorAll('th[data-s]').forEach(th=>th.onclick=()=>{
+  const k=th.dataset.s;
+  if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=1}
+  render();
+});
+render();
+</script>
+</body>
+</html>

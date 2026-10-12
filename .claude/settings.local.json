@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(magick -version)",
+      "Bash(magick identify *)",
+      "PowerShell(winget install --id OpenJS.NodeJS.LTS -e --silent --accept-source-agreements --accept-package-agreements)",
+      "mcp__claude-in-chrome__list_connected_browsers",
+      "mcp__claude-in-chrome__select_browser",
+      "mcp__claude-in-chrome__navigate",
+      "mcp__claude-in-chrome__get_page_text",
+      "mcp__claude-in-chrome__read_page",
+      "WebSearch",
+      "Bash(ls \"C:\\\\Users\\\\pierr\\\\OneDrive - STATIM MANAGEMENT\\\\10 - Marketing et communication\\\\04 - Site web\\\\Elements pour création site web\\\\08-Logos clients\\\\\" | grep -i \"easy\\\\|vista\" || echo \"Aucun fichier EasyVista trouve dans le dossier\")",
+      "mcp__claude-in-chrome__switch_browser",
+      "WebFetch(domain:www.easyvista.com)"
+    ]
+  }
+}
